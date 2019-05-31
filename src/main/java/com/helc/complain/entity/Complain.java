@@ -32,16 +32,16 @@ public class Complain implements Serializable {
 	private GeoJsonPoint punto;
 	
 	@Size(min = 1, max = 30, message = "must have a length between 1 and 30")
-	private String userId;
+	private String email;
 
 
 	public String getUserId() {
-		return userId;
+		return email;
 	}
 
 
 	public void setUserId(String userId) {
-		this.userId = userId;
+		this.email = userId;
 	}
 
 

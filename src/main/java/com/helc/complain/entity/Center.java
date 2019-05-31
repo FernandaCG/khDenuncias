@@ -23,6 +23,9 @@ public class Center implements Serializable{
 	private Double radio;
 	
 	private String estado="En espera";
+	
+	private Date fecha;
+
 
 	public GeoJsonPoint getCenter() {
 		return center;
@@ -46,5 +49,12 @@ public class Center implements Serializable{
 
 	public void setEstado(String estado) {
 		this.estado = estado;
-	}		
+	}	
+	public Date getFecha() {
+		return fecha;
+	}
+
+	public void setFecha(Date fecha) {
+		this.fecha = fecha;
+	}
 }

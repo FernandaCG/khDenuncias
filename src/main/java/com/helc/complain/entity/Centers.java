@@ -10,8 +10,6 @@ public class Centers implements Serializable{
 		
 	private ArrayDeque<Center> complain_centers;
 	
-	private Date fecha;
-
 	public ArrayDeque<Center> getComplain_centers() {
 		return complain_centers;
 	}
@@ -20,11 +18,5 @@ public class Centers implements Serializable{
 		this.complain_centers = complain_centers;
 	}
 	
-	public Date getFecha() {
-		return fecha;
-	}
-
-	public void setFecha(Date fecha) {
-		this.fecha = fecha;
-	}
+	
 }
