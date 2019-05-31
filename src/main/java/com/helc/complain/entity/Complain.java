@@ -35,15 +35,6 @@ public class Complain implements Serializable {
 	private String email;
 
 
-	public String getUserId() {
-		return email;
-	}
-
-
-	public void setUserId(String userId) {
-		this.email = userId;
-	}
-
 
 	public Complain() {	}
 
@@ -95,6 +86,16 @@ public class Complain implements Serializable {
 	public void setPunto(GeoJsonPoint punto) {
 		this.punto = punto;
 	}
+	
+	public String getEmail() {
+		return email;
+	}
+
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
 
 
 	@Override
