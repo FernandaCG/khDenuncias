@@ -49,8 +49,8 @@ public class ComplainService implements IComplainService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<Complain> findByUserId(String userId) throws ComplainsNotFoundException {
-		List<Complain> complainList = complainRepository.findByUserId(userId);
+	public List<Complain> findByEmail(String email) throws ComplainsNotFoundException {
+		List<Complain> complainList = complainRepository.findByEmail(email);
 		if (!complainList.isEmpty()) {
 			log.info("The complains were found");
 			return complainList;

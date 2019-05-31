@@ -80,10 +80,10 @@ public class ComplainRestController {
 	 * 
 	 * @return
 	 */
-	@GetMapping("/complains/{userId}")
-	public ResponseEntity<?> findComplainsByUser(@PathVariable String userId) {
+	@GetMapping("/complains/{email}")
+	public ResponseEntity<?> findComplainsByUser(@PathVariable String email) {
 		try {
-			List<Complain> complains = complainService.findByUserId(userId);
+			List<Complain> complains = complainService.findByEmail(email);
 			return new ResponseEntity<>(complains, HttpStatus.OK);
 		} catch (DataAccessException e) {
 			response.put(Constants.MESSAGE, Constants.QUERY_ERROR);

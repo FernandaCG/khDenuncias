@@ -16,7 +16,7 @@ public interface IComplainService {
 
 	public Page<Complain> findAllComplains(Pageable pageable) throws ComplainsNotFoundException;
 
-	public List<Complain> findByUserId(String userId) throws ComplainsNotFoundException;
+	public List<Complain> findByEmail(String email) throws ComplainsNotFoundException;
 
 	public List<Complain> findBySendDate(String sendDate) throws ComplainsNotFoundException;
 

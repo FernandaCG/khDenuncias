@@ -10,6 +10,6 @@ import com.helc.complain.entity.Complain;
 @Repository
 public interface IComplainRepository extends MongoRepository<Complain, String> {
 	
-	public List<Complain> findByUserId(String userId);
+	public List<Complain> findByEmail(String email);
 	public List<Complain> findBySendDate(String sendDate);
 }
