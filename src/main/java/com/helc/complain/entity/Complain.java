@@ -78,7 +78,6 @@ public class Complain implements Serializable {
 		this.sendDate = fecha;
 	}
 
-
 	public GeoJsonPoint getPunto() {
 		return punto;
 	}
@@ -95,8 +94,6 @@ public class Complain implements Serializable {
 	public void setEmail(String email) {
 		this.email = email;
 	}
-
-
 
 	@Override
 	public String toString() {

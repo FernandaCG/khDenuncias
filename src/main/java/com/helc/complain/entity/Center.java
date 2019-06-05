@@ -17,15 +17,25 @@ public class Center implements Serializable{
 	
 	private static final long serialVersionUID = 1L;
 	
+	private String _id;
+	
 	@JsonDeserialize(using = GeoJsonDeserializer.class)
 	private GeoJsonPoint center;
 	
 	private Double radio;
 	
-	private String estado="En espera";
+	private String estado="Sin asignar";
 	
 	private Date fecha;
 
+	
+	public String get_id() {
+		return _id;
+	}
+
+	public void set_id(String _id) {
+		this._id = _id;
+	}
 
 	public GeoJsonPoint getCenter() {
 		return center;

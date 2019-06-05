@@ -2,6 +2,9 @@ package com.helc.complain.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
+import javax.mail.MessagingException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -55,6 +58,17 @@ public class CenterService implements ICenterService{
 			listaCoordenadas.add(coord);			
 		}
 		return listaCoordenadas;
+	}
+	
+	@Override
+	@Transactional
+	public Center save(Center center) throws MessagingException {
+		return centerRepository.save(center);
+	}
+
+	@Override
+	public Optional<Center> findById(String id) {
+		return centerRepository.findById(id);
 	}
 
 }

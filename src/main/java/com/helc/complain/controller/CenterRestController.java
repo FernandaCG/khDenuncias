@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.mail.MessagingException;
+
 import org.hibernate.validator.internal.constraintvalidators.bv.NotNullValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -54,13 +56,22 @@ public class CenterRestController {
 		}
 	}
 	
+	
 	@GetMapping("/center/coordinates")
 	public ResponseEntity<?> getCoordinates() {
 		try {
 			//List <Center> c = (List<Center>) restTemplate.getForObject("https://fast-savannah-33025.herokuapp.com/centers", Center.class);
 			//System.out.println("objeto centro: "+ c.toString());
 			//restTemplate.exchange("https://fast-savannah-33025.herokuapp.com/centers/", HttpMethod.GET, null, String.class).getBody();
-			return new ResponseEntity<>(restTemplate.getForObject("https://fast-savannah-33025.herokuapp.com/centers", Centers.class), HttpStatus.OK);
+			Centers c = restTemplate.getForObject("https://fast-savannah-33025.herokuapp.com/centers", Centers.class);
+			for (Center center : c.getComplain_centers()) {
+				try {
+					centerService.save(center);
+				} catch (MessagingException e) {
+					e.printStackTrace();
+				}
+			}
+			return new ResponseEntity<>(c, HttpStatus.OK);
 		} catch (DataAccessException e) {
 			response.put(Constants.MESSAGE, Constants.QUERY_ERROR);
 			response.put(Constants.ERROR, e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
@@ -68,4 +79,14 @@ public class CenterRestController {
 		}
 	}
 
+	@GetMapping("/center/{id}")
+	public ResponseEntity<?> buscarCentro(@PathVariable String id){
+		try {
+			return new ResponseEntity<>(centerService.findById(id), HttpStatus.OK);
+		} catch (DataAccessException e) {
+			response.put(Constants.MESSAGE, Constants.QUERY_ERROR);
+			response.put(Constants.ERROR, e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
+			return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
 }
