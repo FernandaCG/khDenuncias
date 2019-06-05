@@ -13,5 +13,9 @@ import com.helc.complain.entity.Complain;
 public interface ICenterRepository extends MongoRepository<Center, String>{
 	
 	public Optional<Center> findById(String id);
+	
+	public Optional<Center> findByAsignadoPEMEX(String asignado);
+	
+	public Optional<Center> findByAsignadoSEDENA(String asignado);
 
 }

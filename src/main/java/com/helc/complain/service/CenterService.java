@@ -68,7 +68,25 @@ public class CenterService implements ICenterService{
 
 	@Override
 	public Optional<Center> findById(String id) {
-		return centerRepository.findById(id);
+		Optional<Center> c = centerRepository.findById(id);
+		return c;
 	}
+	
+	@Override
+	public Optional<Center> findByAsignadoSEDENA(String asignado) {
+		Optional<Center> c = centerRepository.findByAsignadoSEDENA(asignado);
+		return c;
+	}
+	
+	@Override
+	public Optional<Center> findByAsignadoPEMEX(String asignado) {
+		Optional<Center> c = centerRepository.findByAsignadoPEMEX(asignado);
+		return c;
+	}
+	
+	@Override
+	public void delete(String id) {
+		centerRepository.deleteById(id);
 
+	}
 }

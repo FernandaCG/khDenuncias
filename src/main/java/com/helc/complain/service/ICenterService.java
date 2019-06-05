@@ -16,5 +16,8 @@ public interface ICenterService {
 	public Page<Center> findAllCenters(Pageable pageable) throws CenterNotFoundException;
 	public List<Double[]> findCoordinates();
 	public Center save(Center center) throws MessagingException;
-	public Optional<Center>  findById(String id);
+	public Optional<Center> findById(String id);
+	public Optional<Center> findByAsignadoPEMEX(String asignado);
+	public Optional<Center> findByAsignadoSEDENA(String asignado);
+	public void delete(String id);
 }

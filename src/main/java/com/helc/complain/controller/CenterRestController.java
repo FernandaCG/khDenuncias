@@ -3,8 +3,11 @@ package com.helc.complain.controller;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.mail.MessagingException;
+import javax.validation.Valid;
 
 import org.hibernate.validator.internal.constraintvalidators.bv.NotNullValidator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,13 +17,18 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
-
 import com.helc.complain.entity.Center;
 import com.helc.complain.entity.Centers;
 import com.helc.complain.exception.CenterNotFoundException;
@@ -88,5 +96,83 @@ public class CenterRestController {
 			response.put(Constants.ERROR, e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
 			return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
+	}
+	
+	@PutMapping("/center/asignacion")
+	public ResponseEntity<?> asignarCentro(@RequestParam("centro") String cntro, @RequestParam("asignacion") String asignacion, @RequestParam("dependencia") String dependencia){
+		try {
+			Optional<Center> center = centerService.findById(cntro);
+			Center centro = center.get();
+			Center c=null;
+			if(centro.getEstado().equals("Sin asignar")) {
+				centro.setEstado("En espera");
+				System.out.println("asignacion"+ asignacion);
+				if(dependencia.equals("1")) {
+					centro.setAsignadoPEMEX(asignacion);
+					System.out.println("Centro"+ center.toString());	
+				}else {
+					centro.setAsignadoSEDENA(asignacion);
+					System.out.println("Centro"+ center.toString());
+				}
+			}
+			else {
+				if(centro.getEstado().equals("En espera")) {
+					centro.setEstado("En proceso");
+					System.out.println("asignacion"+ asignacion);
+					if(dependencia.equals("1")) {
+						centro.setAsignadoPEMEX(asignacion);
+						System.out.println("Centro"+ center.toString());	
+					}else {
+						centro.setAsignadoSEDENA(asignacion);
+						System.out.println("Centro"+ center.toString());
+					}
+				}
+			}
+			try {
+				c = centerService.save(centro);
+			} catch (MessagingException e) {
+				e.printStackTrace();
+			}
+			response.put(Constants.MESSAGE, Constants.SUCCESSFUL_QUERY);
+			response.put(Constants.ENTITY, centro);
+			return new ResponseEntity<>(response, HttpStatus.CREATED);
+		} catch (DataAccessException e) {
+			response.put(Constants.MESSAGE, Constants.QUERY_ERROR);
+			response.put(Constants.ERROR, e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
+			return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	@GetMapping("/center/asignadoP/{email}")
+	public ResponseEntity<?> buscarAsignadoPEMEX(@PathVariable String email){
+		try {
+			return new ResponseEntity<>(centerService.findByAsignadoPEMEX(email), HttpStatus.OK);
+		} catch (DataAccessException e) {
+			response.put(Constants.MESSAGE, Constants.QUERY_ERROR);
+			response.put(Constants.ERROR, e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
+			return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	@GetMapping("/center/asignadoS/{email}")
+	public ResponseEntity<?> buscarAsignadoSEDENA(@PathVariable String email){
+		try {
+			return new ResponseEntity<>(centerService.findByAsignadoSEDENA(email), HttpStatus.OK);
+		} catch (DataAccessException e) {
+			response.put(Constants.MESSAGE, Constants.QUERY_ERROR);
+			response.put(Constants.ERROR, e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
+			return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+	@DeleteMapping("/center/{id}")
+	public ResponseEntity<?> delete(@PathVariable String id) {
+		response = new HashMap<>();
+		try {
+			centerService.delete(id);
+		} catch (DataAccessException e) {
+			response.put(Constants.MESSAGE, Constants.QUERY_ERROR);
+			response.put(Constants.ERROR, e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
+			return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+		response.put(Constants.MESSAGE, Constants.SUCCESSFUL_QUERY);
+		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 }

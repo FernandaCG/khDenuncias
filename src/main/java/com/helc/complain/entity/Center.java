@@ -27,8 +27,27 @@ public class Center implements Serializable{
 	private String estado="Sin asignar";
 	
 	private Date fecha;
-
 	
+	private String asignadoSEDENA;
+	
+	private String asignadoPEMEX;
+	
+	public String getAsignadoSEDENA() {
+		return asignadoSEDENA;
+	}
+
+	public void setAsignadoSEDENA(String asignadoSEDENA) {
+		this.asignadoSEDENA = asignadoSEDENA;
+	}
+
+	public String getAsignadoPEMEX() {
+		return asignadoPEMEX;
+	}
+
+	public void setAsignadoPEMEX(String asignadoPEMEX) {
+		this.asignadoPEMEX = asignadoPEMEX;
+	}
+
 	public String get_id() {
 		return _id;
 	}
