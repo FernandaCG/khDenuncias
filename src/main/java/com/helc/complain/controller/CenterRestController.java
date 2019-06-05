@@ -104,27 +104,34 @@ public class CenterRestController {
 			Optional<Center> center = centerService.findById(cntro);
 			Center centro = center.get();
 			Center c=null;
-			if(centro.getEstado().equals("Sin asignar")) {
-				centro.setEstado("En espera");
-				System.out.println("asignacion"+ asignacion);
+			if(centro.getEstado().equals("Sin asignar")) {	
 				if(dependencia.equals("1")) {
-					centro.setAsignadoPEMEX(asignacion);
-					System.out.println("Centro"+ center.toString());	
+					centro.setEstado("SEDENA en espera");
+					centro.setAsignadoPEMEX(asignacion);	
 				}else {
 					centro.setAsignadoSEDENA(asignacion);
-					System.out.println("Centro"+ center.toString());
+					centro.setEstado("PEMEX en espera");
 				}
 			}
 			else {
-				if(centro.getEstado().equals("En espera")) {
+				if(centro.getEstado().contains("espera")) {
 					centro.setEstado("En proceso");
-					System.out.println("asignacion"+ asignacion);
 					if(dependencia.equals("1")) {
-						centro.setAsignadoPEMEX(asignacion);
-						System.out.println("Centro"+ center.toString());	
+						centro.setAsignadoPEMEX(asignacion);	
 					}else {
 						centro.setAsignadoSEDENA(asignacion);
-						System.out.println("Centro"+ center.toString());
+					}
+				}else {
+					if(centro.getEstado().equals("En proceso")){
+						if(dependencia.equals("1")) {
+							centro.setEstado("Finalizado SEDENA");	
+						}else {
+							centro.setEstado("Finalizado PEMEX");	
+						}
+					}else {
+						if(centro.getEstado().contains("Finalizado")) {
+							centro.setEstado("Terminado");
+						}
 					}
 				}
 			}
