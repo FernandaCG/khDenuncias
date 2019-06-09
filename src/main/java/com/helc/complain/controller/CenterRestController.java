@@ -77,6 +77,7 @@ public class CenterRestController {
 		try {
 			Centers c = restTemplate.getForObject("https://fast-savannah-33025.herokuapp.com/centers", Centers.class);
 			for (Center center : c.getComplain_centers()) {
+				center.setFecha(c.getFecha());
 				centerService.comparar(center);
 			}
 			return new ResponseEntity<>(centerService.findAllActuales(), HttpStatus.OK);

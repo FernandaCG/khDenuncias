@@ -79,7 +79,6 @@ public class CenterService implements ICenterService{
 		}
 		return listaCoordenadas;
 	}
-	
 	@Override
 	public void comparar(Center centro) throws CenterNotFoundException {
 		List<Center> actuales = findAllActuales();

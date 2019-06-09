@@ -1,7 +1,7 @@
 package com.helc.complain.entity;
 
 import java.io.Serializable;
-import java.sql.Date;
+import java.util.Date;
 import java.util.List;
 
 import javax.validation.constraints.NotEmpty;
