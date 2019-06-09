@@ -1,5 +1,6 @@
 package com.helc.complain.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -67,13 +68,16 @@ public class CenterRestController {
 	}
 
 	@GetMapping("/center/coordinates")
-	/**@HystrixCommand(fallbackMethod = "fallback_hello", commandProperties = {
-			@HystrixProperty(name = "execution.isolation.thread.timeoutInMilliseconds", value = "9000") })*/
+	/**
+	 * @HystrixCommand(fallbackMethod = "fallback_hello", commandProperties = {
+	 * @HystrixProperty(name = "execution.isolation.thread.timeoutInMilliseconds",
+	 *                       value = "9000") })
+	 */
 	public ResponseEntity<?> getCoordinates() throws CenterNotFoundException {
 		try {
 			Centers c = restTemplate.getForObject("https://fast-savannah-33025.herokuapp.com/centers", Centers.class);
 			for (Center center : c.getComplain_centers()) {
-					centerService.comparar(center);
+				centerService.comparar(center);
 			}
 			return new ResponseEntity<>(centerService.findAllActuales(), HttpStatus.OK);
 		} catch (DataAccessException e) {
@@ -171,23 +175,34 @@ public class CenterRestController {
 
 	@GetMapping("/center/asignadoP/{email}")
 	public ResponseEntity<?> buscarAsignadoPEMEX(@PathVariable String email) {
-		try {
-			return new ResponseEntity<>(centerService.findByAsignadoPEMEX(email), HttpStatus.OK);
-		} catch (DataAccessException e) {
-			response.put(Constants.MESSAGE, Constants.QUERY_ERROR);
-			response.put(Constants.ERROR, e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
-			return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+		List<Center> c = centerService.findByAsignadoPEMEX(email);
+		List<Center> actuales = new ArrayList();
+		for (Center center : c) {
+			if (!center.getEstado().equals("Terminado")) {
+				actuales.add(center);
+			}
 		}
+		if(actuales.isEmpty()) {
+			return new ResponseEntity<>("No tienes incidencias asignadas", HttpStatus.OK);	
+		}else {
+			return new ResponseEntity<>(actuales, HttpStatus.OK);
+		}
+		
 	}
 
 	@GetMapping("/center/asignadoS/{email}")
 	public ResponseEntity<?> buscarAsignadoSEDENA(@PathVariable String email) {
-		try {
-			return new ResponseEntity<>(centerService.findByAsignadoSEDENA(email), HttpStatus.OK);
-		} catch (DataAccessException e) {
-			response.put(Constants.MESSAGE, Constants.QUERY_ERROR);
-			response.put(Constants.ERROR, e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
-			return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+		List<Center> c = centerService.findByAsignadoSEDENA(email);
+		List<Center> actuales = new ArrayList();
+		for (Center center : c) {
+			if (!center.getEstado().equals("Terminado")) {
+				actuales.add(center);
+			}
+		}
+		if(actuales.isEmpty()) {
+			return new ResponseEntity<>("No tienes incidencias asignadas", HttpStatus.OK);	
+		}else {
+			return new ResponseEntity<>(actuales, HttpStatus.OK);
 		}
 	}
 

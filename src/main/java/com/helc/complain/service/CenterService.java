@@ -107,14 +107,14 @@ public class CenterService implements ICenterService{
 	}
 	
 	@Override
-	public Optional<Center> findByAsignadoSEDENA(String asignado) {
-		Optional<Center> c = centerRepository.findByAsignadoSEDENA(asignado);
+	public List<Center> findByAsignadoSEDENA(String asignado) {
+		List<Center> c = centerRepository.findByAsignadoSEDENA(asignado);
 		return c;
 	}
 	
 	@Override
-	public Optional<Center> findByAsignadoPEMEX(String asignado) {
-		Optional<Center> c = centerRepository.findByAsignadoPEMEX(asignado);
+	public List<Center> findByAsignadoPEMEX(String asignado) {
+		List<Center> c = centerRepository.findByAsignadoPEMEX(asignado);
 		return c;
 	}
 	

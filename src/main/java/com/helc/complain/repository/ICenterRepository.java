@@ -14,8 +14,8 @@ public interface ICenterRepository extends MongoRepository<Center, String>{
 	
 	public Optional<Center> findById(String id);
 	
-	public Optional<Center> findByAsignadoPEMEX(String asignado);
+	public List<Center> findByAsignadoPEMEX(String asignado);
 	
-	public Optional<Center> findByAsignadoSEDENA(String asignado);
+	public List<Center> findByAsignadoSEDENA(String asignado);
 
 }
