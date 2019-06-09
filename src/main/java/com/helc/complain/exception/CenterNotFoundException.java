@@ -7,5 +7,12 @@ public class CenterNotFoundException extends Exception{
 	public CenterNotFoundException() {
 		super();
 	}
+	public CenterNotFoundException(String message, Throwable cause, boolean enableSuppression,
+			boolean writableStackTrace) {
+		super(message, cause, enableSuppression, writableStackTrace);
+	}
+	public CenterNotFoundException(String message) {
+		super(message);
+	}
 
 }

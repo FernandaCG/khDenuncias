@@ -43,6 +43,25 @@ public class CenterService implements ICenterService{
 			throw new CenterNotFoundException();
 		}
 	}
+	
+	@Override
+	@Transactional(readOnly = true)
+	public List<Center> findAllActuales() throws CenterNotFoundException{
+		List<Center> centros = centerRepository.findAll();
+		List<Center> centrosActuales = new ArrayList();
+		if (!centros.isEmpty()) {
+		for (Center center : centros) {		
+			if(!center.getEstado().equals("Terminado")) {
+				centrosActuales.add(center);
+			}
+		}
+			log.info("Centros disponibles");
+			return centrosActuales;
+		} else {
+			log.info("No se encontraron centros actualmente");
+			throw new CenterNotFoundException("No existen denuncias disponibles por atender");
+		}
+	}
 
 	@Override
 	public List<Double[]> findCoordinates() {
@@ -58,6 +77,21 @@ public class CenterService implements ICenterService{
 			listaCoordenadas.add(coord);			
 		}
 		return listaCoordenadas;
+	}
+	
+	@Override
+	public void comparar(Center centro) throws CenterNotFoundException {
+		List<Center> actuales = findAllActuales();
+		for (Center center : actuales) {
+			if(!center.getCenter().equals(centro.getCenter())) {
+				try {
+					save(center);
+				} catch (MessagingException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 	
 	@Override
