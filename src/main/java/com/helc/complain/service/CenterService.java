@@ -57,9 +57,10 @@ public class CenterService implements ICenterService{
 		}
 			log.info("Centros disponibles");
 			return centrosActuales;
-		} else {
+		} else { 
 			log.info("No se encontraron centros actualmente");
-			throw new CenterNotFoundException("No existen denuncias disponibles por atender");
+			//throw new CenterNotFoundException("No existen denuncias disponibles por atender");
+			return null;
 		}
 	}
 
@@ -82,6 +83,14 @@ public class CenterService implements ICenterService{
 	@Override
 	public void comparar(Center centro) throws CenterNotFoundException {
 		List<Center> actuales = findAllActuales();
+		if(actuales == null) {
+			try {
+				save(centro);
+			} catch (MessagingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}else {
 		for (Center center : actuales) {
 			if(!center.getCenter().equals(centro.getCenter())) {
 				try {
@@ -91,6 +100,7 @@ public class CenterService implements ICenterService{
 					e.printStackTrace();
 				}
 			}
+		}
 		}
 	}
 	
