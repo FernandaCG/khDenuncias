@@ -21,15 +21,13 @@ import com.helc.complain.entity.Coordenadas;
 import com.helc.complain.exception.CenterNotFoundException;
 import com.helc.complain.repository.ICenterRepository;
 
-
 @Service
-public class CenterService implements ICenterService{
-	
+public class CenterService implements ICenterService {
+
 	private static final Logger log = LogManager.getLogger(ComplainService.class);
 
 	@Autowired
 	private ICenterRepository centerRepository;
-
 
 	@Override
 	@Transactional(readOnly = true)
@@ -43,23 +41,21 @@ public class CenterService implements ICenterService{
 			throw new CenterNotFoundException();
 		}
 	}
-	
+
 	@Override
-	@Transactional(readOnly = true)
-	public List<Center> findAllActuales() throws CenterNotFoundException{
+	public List<Center> findAllActuales() throws CenterNotFoundException {
 		List<Center> centros = centerRepository.findAll();
 		List<Center> centrosActuales = new ArrayList();
 		if (!centros.isEmpty()) {
-		for (Center center : centros) {		
-			if(!center.getEstado().equals("Terminado")) {
-				centrosActuales.add(center);
+			for (Center center : centros) {
+				if (!center.getEstado().equals("Terminado")) {
+					centrosActuales.add(center);
+				}
 			}
-		}
 			log.info("Centros disponibles");
 			return centrosActuales;
-		} else { 
+		} else {
 			log.info("No se encontraron centros actualmente");
-			//throw new CenterNotFoundException("No existen denuncias disponibles por atender");
 			return null;
 		}
 	}
@@ -67,42 +63,41 @@ public class CenterService implements ICenterService{
 	@Override
 	public List<Double[]> findCoordinates() {
 		List<Center> centros = centerRepository.findAll();
-		Coordenadas coordenadas=null;
+		Coordenadas coordenadas = null;
 		List<Double[]> listaCoordenadas = new ArrayList();
 		GeoJsonPoint g;
-		System.out.println("len"+ centros.size());
-		for (Center center : centros) {			
+		System.out.println("len" + centros.size());
+		for (Center center : centros) {
 			g = center.getCenter();
 			g.getCoordinates();
-			Double[] coord = {g.getX(), g.getY()};
-			listaCoordenadas.add(coord);			
+			Double[] coord = { g.getX(), g.getY() };
+			listaCoordenadas.add(coord);
 		}
 		return listaCoordenadas;
 	}
+
 	@Override
 	public void comparar(Center centro) throws CenterNotFoundException {
 		List<Center> actuales = findAllActuales();
-		if(actuales == null) {
+		if (actuales == null) {
 			try {
 				save(centro);
 			} catch (MessagingException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		}else {
-		for (Center center : actuales) {
-			if(!center.getCenter().equals(centro.getCenter())) {
-				try {
-					save(center);
-				} catch (MessagingException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+		} else {
+			for (Center center : actuales) {
+				if (!center.getCenter().equals(centro.getCenter())) {
+					try {
+						save(center);
+					} catch (MessagingException e) {
+						e.printStackTrace();
+					}
 				}
 			}
 		}
-		}
 	}
-	
+
 	@Override
 	@Transactional
 	public Center save(Center center) throws MessagingException {
@@ -114,19 +109,19 @@ public class CenterService implements ICenterService{
 		Optional<Center> c = centerRepository.findById(id);
 		return c;
 	}
-	
+
 	@Override
 	public List<Center> findByAsignadoSEDENA(String asignado) {
 		List<Center> c = centerRepository.findByAsignadoSEDENA(asignado);
 		return c;
 	}
-	
+
 	@Override
 	public List<Center> findByAsignadoPEMEX(String asignado) {
 		List<Center> c = centerRepository.findByAsignadoPEMEX(asignado);
 		return c;
 	}
-	
+
 	@Override
 	public void delete(String id) {
 		centerRepository.deleteById(id);

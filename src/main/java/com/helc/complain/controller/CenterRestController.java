@@ -8,8 +8,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.mail.MessagingException;
+import javax.management.RuntimeErrorException;
 import javax.validation.Valid;
 
+import org.apache.commons.lang.math.RandomUtils;
 import org.hibernate.validator.internal.constraintvalidators.bv.NotNullValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -29,6 +31,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import com.helc.complain.entity.Center;
 import com.helc.complain.entity.Centers;
@@ -67,18 +70,45 @@ public class CenterRestController {
 		}
 	}
 
+	@HystrixCommand(fallbackMethod = "fall_BackHello", commandKey = "/center/coordinates", groupKey = "/center/coordinates", commandProperties = {
+			@HystrixProperty(name = "execution.timeout.enabled", value = "false") })
 	@GetMapping("/center/coordinates")
-	/**
-	 * @HystrixCommand(fallbackMethod = "fallback_hello", commandProperties = {
-	 * @HystrixProperty(name = "execution.isolation.thread.timeoutInMilliseconds",
-	 *                       value = "9000") })
-	 */
 	public ResponseEntity<?> getCoordinates() throws CenterNotFoundException {
 		try {
 			Centers c = restTemplate.getForObject("https://fast-savannah-33025.herokuapp.com/centers", Centers.class);
 			for (Center center : c.getComplain_centers()) {
 				center.setFecha(c.getFecha());
 				centerService.comparar(center);
+			}
+			return new ResponseEntity<>(centerService.findAllActuales(), HttpStatus.OK);
+		} catch (DataAccessException e) {
+			response.put(Constants.MESSAGE, Constants.QUERY_ERROR);
+			response.put(Constants.ERROR, e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
+			return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+		}
+	}
+
+	public ResponseEntity<?> fall_BackHello() throws CenterNotFoundException {
+		try {
+			Centers c=new Centers();
+			try {
+				 c = restTemplate.getForObject("https://kmeans-server-dup.herokuapp.com/centers", Centers.class);
+			} catch (HttpClientErrorException e) {
+				response.put(Constants.ERROR, "ANSARRY4U, Error petición, 4xx");
+				return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+			}
+
+			if (c == null) {
+				response.put(Constants.ERROR, "ANSARRY4U, no existen centros actualmente");
+				return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+			}
+			for (Center center : c.getComplain_centers()) {
+				center.setFecha(c.getFecha());
+				try {
+					centerService.comparar(center);
+				} catch (CenterNotFoundException e) {
+					response.put(Constants.MESSAGE, "Error al obtener centros");
+				}
 			}
 			return new ResponseEntity<>(centerService.findAllActuales(), HttpStatus.OK);
 		} catch (DataAccessException e) {
@@ -183,12 +213,12 @@ public class CenterRestController {
 				actuales.add(center);
 			}
 		}
-		if(actuales.isEmpty()) {
-			return new ResponseEntity<>("No tienes incidencias asignadas", HttpStatus.OK);	
-		}else {
+		if (actuales.isEmpty()) {
+			return new ResponseEntity<>("No tienes incidencias asignadas", HttpStatus.OK);
+		} else {
 			return new ResponseEntity<>(actuales, HttpStatus.OK);
 		}
-		
+
 	}
 
 	@GetMapping("/center/asignadoS/{email}")
@@ -200,9 +230,9 @@ public class CenterRestController {
 				actuales.add(center);
 			}
 		}
-		if(actuales.isEmpty()) {
-			return new ResponseEntity<>("No tienes incidencias asignadas", HttpStatus.OK);	
-		}else {
+		if (actuales.isEmpty()) {
+			return new ResponseEntity<>("No tienes incidencias asignadas", HttpStatus.OK);
+		} else {
 			return new ResponseEntity<>(actuales, HttpStatus.OK);
 		}
 	}
@@ -221,26 +251,4 @@ public class CenterRestController {
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 
-	public ResponseEntity<?> fallback_hello() {
-		try {
-			Centers c = restTemplate.getForObject("https://kmeans-server-dup.herokuapp.com/centers", Centers.class);
-			if (c == null) {
-				response.put(Constants.ERROR, "Intente más tarde");
-				return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
-			} else {
-				for (Center center : c.getComplain_centers()) {
-					try {
-						centerService.save(center);
-					} catch (MessagingException e) {
-						e.printStackTrace();
-					}
-				}
-				return new ResponseEntity<>(c, HttpStatus.OK);
-			}
-		} catch (DataAccessException e) {
-			response.put(Constants.MESSAGE, Constants.QUERY_ERROR);
-			response.put(Constants.ERROR, e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
-			return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-	}
 }
